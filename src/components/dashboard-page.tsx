@@ -25,7 +25,7 @@ const DashboardPage = ({
             </Button>
           )}
           <Heading>{title}</Heading>
-          {cta ? <div></div> : null}
+          {cta ? <div className="w-full">{cta}</div> : null}
         </div>
       </div>
 

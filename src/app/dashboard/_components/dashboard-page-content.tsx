@@ -3,14 +3,15 @@ import { client } from "@/app/lib/client"
 import LoadingSpinner from "@/components/loading-spinner"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { Modal } from "@/components/ui/modal"
-import { QueryClient, useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { format, formatDistanceToNow } from "date-fns"
 import { ArrowRight, BarChart, Clock, Database, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
+import DashboardEmptyState from "./dashboard-empty-state"
 
 const DashboardPageContent = () => {
-  const queryClient = new QueryClient()
+  const queryClient = useQueryClient()
   const [deletingCategory, setDeletingCategory] = useState<string | null>(null)
   const { data: categories, isPending: isEventCategoriesLoading } = useQuery({
     queryKey: ["user-event-categories"],
@@ -39,7 +40,7 @@ const DashboardPageContent = () => {
   }
 
   if (!categories || categories.length === 0) {
-    return <div className="">empty state</div>
+    return <DashboardEmptyState />
   }
   return (
     <>
