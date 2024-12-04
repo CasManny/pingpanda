@@ -9,6 +9,7 @@ import {
   CATEGORY_NAME_VALIDATOR,
 } from "@/lib/validators/category.validators"
 import { parseColor } from "@/utils"
+import { HTTPException } from "hono/http-exception"
 
 export const categoryRouter = router({
   getEventCategories: privateProcedure.query(async ({ c, ctx }) => {
@@ -115,15 +116,47 @@ export const categoryRouter = router({
   insertQuickStartCategories: privateProcedure.mutation(async ({ c, ctx }) => {
     const categories = await db.eventCategory.createMany({
       data: [
-        { name: "Bug", emoji: "🐞", color: 0xff6b6b},
-        { name: "Sale", emoji: "💰", color: 0xffeb3b},
-        { name: "Question", emoji: "🤔", color: 0x6c5ce7},
+        { name: "Bug", emoji: "🐞", color: 0xff6b6b },
+        { name: "Sale", emoji: "💰", color: 0xffeb3b },
+        { name: "Question", emoji: "🤔", color: 0x6c5ce7 },
       ].map((category) => ({
         ...category,
-        userId: ctx.user.id
+        userId: ctx.user.id,
       })),
     })
 
     return c.json({ status: "success", count: categories.count })
   }),
+
+  pollCategory: privateProcedure
+    .input(z.object({ name: CATEGORY_NAME_VALIDATOR }))
+    .query(async ({ c, ctx, input }) => {
+      const { name } = input
+
+      const category = await db.eventCategory.findUnique({
+        where: {
+          name_userId: {
+            name,
+            userId: ctx.user.id,
+          },
+        },
+        include: {
+          _count: {
+            select: {
+              events: true,
+            },
+          },
+        },
+      })
+
+      if (!category) {
+        throw new HTTPException(404, {
+          message: `Category "${name}" not found`,
+        })
+      }
+
+      const hasEvents = category._count.events > 0
+
+      return c.json({ hasEvents })
+    }),
 })
