@@ -1,7 +1,14 @@
-import { SignIn } from '@clerk/nextjs'
+"use client"
+import { SignIn } from "@clerk/nextjs"
+import { useSearchParams } from "next/navigation"
 const Signinpage = () => {
+  const searchParams = useSearchParams()
+  const intent = searchParams.get("intent")
+
   return (
-   <SignIn />
+    <SignIn
+      forceRedirectUrl={intent ? `/dashboard?intent=${intent}` : "/dashboard"}
+    />
   )
 }
 

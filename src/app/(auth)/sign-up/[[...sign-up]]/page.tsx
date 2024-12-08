@@ -1,8 +1,8 @@
-import { SignUp } from '@clerk/nextjs'
+import { SignUp } from "@clerk/nextjs"
 
 const SignupPage = () => {
-    return (
-      <SignUp />
+  return (
+    <SignUp fallbackRedirectUrl={"/welcome"} forceRedirectUrl={"/welcome"} />
   )
 }
 

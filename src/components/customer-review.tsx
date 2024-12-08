@@ -24,7 +24,7 @@ const CustomerReview = ({
     <div className="flex flex-auto flex-col gap-4 bg-brand-25 p-6 sm:p-8 lg:p-16 rounded-t-[2rem] lg:rounded-tr-none lg:rounded-l-[2rem]">
       <div className="flex gap-0.5 justify-center lg:justify-start">
         {Array.from({ length: maxStars }, (_, index) => (
-          <Star className="size-5 text-brand-600 fill-brand-600" />
+          <Star key={index} className="size-5 text-brand-600 fill-brand-600" />
         ))}
       </div>
       <p className="text-base sm:text-lg lg:text-lg/8 font-medium tracking-tight text-brand-950 lg:text-left text-pretty">

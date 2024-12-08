@@ -3,8 +3,8 @@
 import { Event, EventCategory } from "@prisma/client"
 import { useQuery } from "@tanstack/react-query"
 import EmptyCategoryState from "./empty-category-state"
-import { useMemo, useState } from "react"
-import { useSearchParams } from "next/navigation"
+import { useEffect, useMemo, useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { client } from "@/app/lib/client"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Card from "@/components/card"
@@ -42,6 +42,7 @@ const CategoryPageContent = ({
   hasEvents: initialHasEvents,
   category,
 }: CategoryPageContentProps) => {
+  const router = useRouter()
   const searchParams = useSearchParams()
   const page = parseInt(searchParams.get("page") || "1", 10)
   const limit = parseInt(searchParams.get("limit") || "30", 10)
@@ -57,10 +58,6 @@ const CategoryPageContent = ({
     queryKey: ["category", category.name, "hasEvents"],
     initialData: { hasEvents: initialHasEvents },
   })
-
-  if (!poolingData.hasEvents) {
-    return <EmptyCategoryState categoryName={category.name} />
-  }
 
   const { data, isFetching } = useQuery({
     queryKey: [
@@ -255,6 +252,17 @@ const CategoryPageContent = ({
         </Card>
       )
     })
+  }
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search)
+    searchParams.set("page", (pagination.pageIndex + 1).toString())
+    searchParams.set("limit", pagination.pageSize.toString())
+    router.push(`?${searchParams.toString()}`, { scroll: false })
+  }, [pagination, router])
+
+  if (!poolingData.hasEvents) {
+    return <EmptyCategoryState categoryName={category.name} />
   }
 
   return (
